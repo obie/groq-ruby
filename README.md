@@ -1,6 +1,6 @@
 # Groq
 
-Groq Cloud runs LLM models fast and cheap. Llama 3, Mixtrel, Gemma, and more at hundreds of tokens per second, at cents per million tokens.
+Groq Cloud runs LLM models fast and cheap. Llama 3.1, Mixtrel, Gemma, and more at hundreds of tokens per second, at cents per million tokens.
 
 [![speed-pricing](docs/images/groq-speed-price-20240421.png)](https://wow.groq.com/)
 
@@ -69,6 +69,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 ```plain
 gem install groq
 ```
+
 ## Usage
 
 - Get your API key from [console.groq.com/keys](https://console.groq.com/keys)
@@ -76,12 +77,12 @@ gem install groq
 - Use the `Groq::Client` to interact with Groq and your favourite model.
 
 ```ruby
-client = Groq::Client.new # uses ENV["GROQ_API_KEY"] and "llama3-8b-8192"
-client = Groq::Client.new(api_key: "...", model_id: "llama3-8b-8192")
+client = Groq::Client.new # uses ENV["GROQ_API_KEY"] and "llama-3.1-8b-instant"
+client = Groq::Client.new(api_key: "...", model_id: "llama-3.1-8b-instant")
 
 Groq.configure do |config|
   config.api_key = "..."
-  config.model_id = "llama3-70b-8192"
+  config.model_id = "llama-3.1-70b-versatile"
 end
 client = Groq::Client.new
 ```
@@ -148,10 +149,10 @@ T("tool", tool_call_id: "call_b790", name: "get_weather_report", content: "25 de
 
 There are also aliases for each helper function:
 
-* `U(content)` is also `User(content)`
-* `A(content)` is also `Assistant(content)`
-* `S(content)` is also `System(content)`
-* `T(content, ...)` is also `Tool`, `ToolReply`, `Function`, `F`
+- `U(content)` is also `User(content)`
+- `A(content)` is also `Assistant(content)`
+- `S(content)` is also `System(content)`
+- `T(content, ...)` is also `Tool`, `ToolReply`, `Function`, `F`
 
 ### Specifying an LLM model
 
@@ -160,26 +161,29 @@ At the time of writing, Groq Cloud service supports a limited number of models. 
 To get the list of known model IDs:
 
 ```ruby
-Groq::Model.model_ids
-=> ["llama3-8b-8192", "llama3-70b-8192", "llama2-70b-4096", "mixtral-8x7b-32768", "gemma-7b-it"]
+Groq::Model.load_models(client:)
+=> {"object"=>"list", "data"=>
+  [{"id"=>"gemma2-9b-it", "object"=>"model", "created"=>1693721698, "owned_by"=>"Google", "active"=>true, "context_window"=>8192, "public_apps"=>nil},
+   {"id"=>"gemma-7b-it", "object"=>"model", "created"=>1693721698, "owned_by"=>"Google", "active"=>true, "context_window"=>8192, "public_apps"=>nil},
+   {"id"=>"llama-3.1-70b-versatile", "object"=>"model", "created"=>1693721698, "owned_by"=>"Meta", "active"=>true, "context_window"=>131072, "public_apps"=>nil},
+   {"id"=>"llama-3.1-8b-instant", "object"=>"model", "created"=>1693721698, "owned_by"=>"Meta", "active"=>true, "context_window"=>131072, "public_apps"=>nil},
+   ...
 ```
-
-To get more data about each model, see `Groq::Model::MODELS`.
 
 As above, you can specify the default model to use for all `chat()` calls:
 
 ```ruby
-client = Groq::Client.new(model_id: "llama3-70b-8192")
+client = Groq::Client.new(model_id: "llama-3.1-70b-versatile")
 # or
 Groq.configure do |config|
-  config.model_id = "llama3-70b-8192"
+  config.model_id = "llama-3.1-70b-versatile"
 end
 ```
 
 You can also specify the model within the `chat()` call:
 
 ```ruby
-@client.chat("Hello, world!", model_id: "llama3-70b-8192")
+@client.chat("Hello, world!", model_id: "llama-3.1-70b-versatile")
 ```
 
 To see all known models reply:
@@ -196,8 +200,8 @@ The output might looks similar to:
 
 ```plain
 > User message: Hello, world!
-Assistant reply with model llama3-8b-8192:
-Assistant reply with model llama3-70b-8192:
+Assistant reply with model llama-3.1-8b-instant:
+Assistant reply with model llama-3.1-70b-versatile:
 {"role"=>"assistant", "content"=>"The classic \"Hello, world!\" It's great to see you here! Is there something I can help you with, or would you like to just chat?"}
 Assistant reply with model llama2-70b-4096:
 {"role"=>"assistant", "content"=>"Hello, world!"}
@@ -391,10 +395,10 @@ puts
 
 Each chunk of the response will be printed to the console as it is received. It will look pretty.
 
-The default `llama3-7b-8192` model is very very fast and you might not see any streaming. Try a slower model like `llama3-70b-8192` or `mixtral-8x7b-32768`.
+The default `llama3-7b-8192` model is very very fast and you might not see any streaming. Try a slower model like `llama-3.1-70b-versatile` or `mixtral-8x7b-32768`.
 
 ```ruby
-@client = Groq::Client.new(model_id: "llama3-70b-8192")
+@client = Groq::Client.new(model_id: "llama-3.1-70b-versatile")
 @client.chat("Write a long poem about patience") do |content|
   print content
 end
