@@ -22,7 +22,7 @@ class Groq::Client
     @faraday_middleware = faraday_middleware
   end
 
-  def chat(messages, model_id: nil, tools: nil, tool_choice: nil, max_tokens: nil, temperature: nil, json: false, stream: nil, &stream_chunk)
+  def chat(messages, model_id: nil, raw: false, tools: nil, tool_choice: nil, max_tokens: nil, temperature: nil, json: false, stream: nil, &stream_chunk)
     unless messages.is_a?(Array) || messages.is_a?(String)
       raise ArgumentError, "require messages to be an Array or String"
     end
@@ -50,7 +50,7 @@ class Groq::Client
     response = post(path: "/openai/v1/chat/completions", body: body)
     # Configured to raise exceptions on 4xx/5xx responses
     if response.body.is_a?(Hash)
-      return response.body.dig("choices", 0, "message")
+      return raw ? response : response.body.dig("choices", 0, "message")
     end
     response.body
   end
